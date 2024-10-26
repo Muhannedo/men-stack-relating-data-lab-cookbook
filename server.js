@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const addUserToViews = require('./middleware/addUserToViews');
+const path = require('path');
+// Load environment variables
 require('dotenv').config();
 require('./config/database');
 
@@ -12,6 +14,7 @@ const authController = require('./controllers/auth');
 const recipesController = require('./controllers/recipes.js');
 const ingredientsController = require('./controllers/ingredients.js');
 const isSignedIn = require('./middleware/isSignedIn');
+const passUerToViews = require('./middleware/addUserToViews');
 
 const app = express();
 // Set the port from environment variable or default to 3000
@@ -25,6 +28,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride('_method'));
 // Morgan for logging HTTP requests
 app.use(morgan('dev'));
+app.use(express.static(path.join(__dirname, 'public')));
+// Middleware to serve static files
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
