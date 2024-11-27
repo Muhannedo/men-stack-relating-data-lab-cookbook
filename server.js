@@ -1,34 +1,34 @@
-const express = require('express');
-const methodOverride = require('method-override');
-const morgan = require('morgan');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-const addUserToViews = require('./middleware/addUserToViews');
-const path = require('path');
+const express = require("express");
+const methodOverride = require("method-override");
+const morgan = require("morgan");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const addUserToViews = require("./middleware/addUserToViews");
+const path = require("path");
 // Load environment variables
-require('dotenv').config();
-require('./config/database');
+require("dotenv").config();
+require("./config/database");
 
 // Controllers
-const authController = require('./controllers/auth');
-const recipesController = require('./controllers/recipes.js');
-const ingredientsController = require('./controllers/ingredients.js');
-const isSignedIn = require('./middleware/isSignedIn');
-const passUerToViews = require('./middleware/addUserToViews');
+const authController = require("./controllers/auth");
+const recipesController = require("./controllers/recipes.js");
+const ingredientsController = require("./controllers/ingredients.js");
+const isSignedIn = require("./middleware/isSignedIn");
+const passUerToViews = require("./middleware/addUserToViews");
 
 const app = express();
 // Set the port from environment variable or default to 3000
-const port = process.env.PORT ? process.env.PORT : '3000';
+const port = process.env.PORT ? process.env.PORT : "3000";
 
 // MIDDLEWARE
 
 // Middleware to parse URL-encoded data from forms
 app.use(express.urlencoded({ extended: false }));
 // Middleware for using HTTP verbs such as PUT or DELETE
-app.use(methodOverride('_method'));
+app.use(methodOverride("_method"));
 // Morgan for logging HTTP requests
-app.use(morgan('dev'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(morgan("dev"));
+app.use(express.static(path.join(__dirname, "public")));
 // Middleware to serve static files
 app.use(
   session({
@@ -44,20 +44,18 @@ app.use(
 app.use(addUserToViews);
 
 // Public Routes
-app.get('/', async (req, res) => {
-  res.render('index.ejs');
+app.get("/", async (req, res) => {
+  res.render("index.ejs");
 });
 
-app.use('/auth', authController);
-app.use('/recipes', recipesController);
-app.use('/ingredients', ingredientsController);
+app.use("/auth", authController);
+app.use("/recipes", recipesController);
+app.use("/ingredients", ingredientsController);
 
 // Protected Routes
 app.use(isSignedIn);
 
-
-
-app.get('/protected', async (req, res) => {
+app.get("/protected", async (req, res) => {
   if (req.session.user) {
     res.send(`Welcome to the party ${req.session.user.username}.`);
   } else {
